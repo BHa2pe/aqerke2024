@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация и Вход</title>
+
+    <!-- Подключение библиотеки Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+    <h1>Регистрация и Вход</h1>
+
+    <!-- Форма входа -->
+    <div id="loginForm">
+        <h3>Вход</h3>
+        <form id="login" onsubmit="return loginUser(event)">
+            <input type="email" id="loginEmail" placeholder="Введите email" required>
+            <input type="password" id="loginPassword" placeholder="Введите пароль" required>
+            <button type="submit">Войти</button>
+        </form>
+        <p id="loginError" style="color: red;"></p>
+    </div>
+
+    <!-- Форма регистрации -->
+    <div id="registerForm">
+        <h3>Регистрация</h3>
+        <form id="register" onsubmit="return registerUser(event)">
+            <input type="email" id="registerEmail" placeholder="Введите email" required>
+            <input type="password" id="registerPassword" placeholder="Введите пароль" required>
+            <button type="submit">Зарегистрироваться</button>
+        </form>
+        <p id="registerError" style="color: red;"></p>
+    </div>
+
+    <script>
+        // Здесь вы создаете клиент Supabase
+        const supabaseUrl = 'https://emfjdirzyaffqsssmmyt.supabase.co';  // Ваш URL
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVtZmpkaXJ6eWFmZnFzc3NtbXl0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzMzNTE0MTUsImV4cCI6MjA0ODkyNzQxNX0.8BbHKcE22eFoOvj721CDiGZuj0WkCS3At7ku1fZ29S4';  // Ваш публичный ключ
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        // Функция для регистрации пользователя
+        async function registerUser(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            try {
+                const { user, error } = await supabase.auth.signUp({
+                    email,
+                    password
+                });
+
+                if (error) {
+                    document.getElementById('registerError').textContent = error.message;
+                } else {
+                    document.getElementById('registerError').textContent = '';
+                    alert('Регистрация успешна! Подтвердите ваш email.');
+                }
+            } catch (err) {
+                document.getElementById('registerError').textContent = 'Ошибка регистрации: ' + err.message;
+            }
+        }
+
+        // Функция для входа пользователя
+        async function loginUser(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const { user, error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+                if (error) {
+                    document.getElementById('loginError').textContent = error.message;
+                } else {
+                    document.getElementById('loginError').textContent = '';
+                    alert('Добро пожаловать, ' + user.email);
+                    // Можно перенаправить на другую страницу или обновить интерфейс
+                    // window.location.href = 'dashboard.html'; // Пример
+                }
+            } catch (err) {
+                document.getElementById('loginError').textContent = 'Ошибка входа: ' + err.message;
+            }
+        }
+    </script>
+</body>
+</html>
